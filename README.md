@@ -26,6 +26,12 @@ A native macOS live wallpaper app inspired by Wallper.app. Browse, import, and a
 - Xcode 16+ or Swift 6.0+ toolchain.
 - For distribution outside the Mac App Store: code signing + notarization.
 
+## Screenshots
+
+![Gallery](Screenshots/gallery.png)
+
+![Settings](Screenshots/settings.png)
+
 ## Download
 
 The latest compiled app is available in the [Releases](https://github.com/HectorG09/LiveWallpapers-MacOS/releases) section:
