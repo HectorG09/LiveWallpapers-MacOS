@@ -36,7 +36,7 @@ A native macOS live wallpaper app inspired by Wallper.app. Browse, import, and a
 
 The latest compiled app is available in the [Releases](https://github.com/HectorG09/LiveWallpapers-MacOS/releases) section:
 
-- **[LiveWallpapers v1.0.3](https://github.com/HectorG09/LiveWallpapers-MacOS/releases/tag/v1.0.3)** (latest)
+- **[LiveWallpapers v1.0.4](https://github.com/HectorG09/LiveWallpapers-MacOS/releases/tag/v1.0.4)** (latest)
 
 Download `LiveWallpapers.zip`, extract it, and double-click `LiveWallpapers.app`.
 
