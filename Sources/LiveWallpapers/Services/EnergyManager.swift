@@ -168,17 +168,16 @@ final class EnergyManager: ObservableObject {
     }
     
     private nonisolated static func detectFullscreenAppOnAnyScreen() async -> Bool {
-        let (screens, frontApp) = await MainActor.run {
-            (NSScreen.screens.map { $0.frame }, NSWorkspace.shared.frontmostApplication)
-        }
-        guard let frontApp else { return false }
+        let screens = await MainActor.run { NSScreen.screens.map { $0.frame } }
         
         let windowList = CGWindowListCopyWindowInfo(.optionOnScreenOnly, kCGNullWindowID) as? [[String: Any]] ?? []
-        let appWindows = windowList.filter { ($0[kCGWindowOwnerPID as String] as? Int32) == frontApp.processIdentifier }
         
-        return appWindows.contains { info in
+        // Check ANY normal-level window that covers an entire screen.
+        // This catches fullscreen apps even when they are not the frontmost app (e.g. during trackpad gestures).
+        return windowList.contains { info in
             guard let layer = info[kCGWindowLayer as String] as? Int, layer == 0,
-                  let boundsDict = info[kCGWindowBounds as String] as? [String: CGFloat]
+                  let boundsDict = info[kCGWindowBounds as String] as? [String: CGFloat],
+                  let alpha = info[kCGWindowAlpha as String] as? Double, alpha > 0
             else { return false }
             
             let rect = CGRect(
@@ -189,10 +188,10 @@ final class EnergyManager: ObservableObject {
             )
             
             return screens.contains { screenFrame in
-                abs(rect.minX - screenFrame.minX) < 2 &&
-                abs(rect.minY - screenFrame.minY) < 2 &&
-                abs(rect.width - screenFrame.width) < 2 &&
-                abs(rect.height - screenFrame.height) < 2
+                abs(rect.minX - screenFrame.minX) < 5 &&
+                abs(rect.minY - screenFrame.minY) < 5 &&
+                abs(rect.width - screenFrame.width) < 5 &&
+                abs(rect.height - screenFrame.height) < 5
             }
         }
     }

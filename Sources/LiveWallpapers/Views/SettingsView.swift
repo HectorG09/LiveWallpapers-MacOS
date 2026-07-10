@@ -11,6 +11,10 @@ struct SettingsView: View {
     
     private var settings: AppSettings? { settingsList.first }
     
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -56,6 +60,13 @@ struct SettingsView: View {
                     Toggle("Only auto-change when on AC power", isOn: binding(forKeyPath: \.autoChangeOnlyOnAC))
                 }
                 
+                Section("Desktop") {
+                    Toggle("Clean Desktop", isOn: cleanDesktopBinding)
+                    Text("Hide desktop icons for a minimal look. Your files and folders are not deleted; Finder just stops showing them on the desktop.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
                 Section("Online Source") {
                     Toggle("Enable Unsplash sample wallpapers", isOn: binding(forKeyPath: \.unsplashEnabled))
                     TextField("Unsplash Access Key", text: binding(forKeyPath: \.unsplashAccessKey))
@@ -72,13 +83,35 @@ struct SettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+                
+                Section("About") {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text(appVersion)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Link("GitHub Repository", destination: URL(string: "https://github.com/HectorG09/LiveWallpapers-MacOS")!)
+                }
             }
             .formStyle(.grouped)
             .padding()
             
             Spacer()
         }
-        .frame(width: 500, height: 500)
+        .frame(width: 500, height: 620)
+    }
+    
+    private var cleanDesktopBinding: Binding<Bool> {
+        Binding(
+            get: { settings?.cleanDesktopEnabled ?? false },
+            set: { newValue in
+                settings?.cleanDesktopEnabled = newValue
+                try? settings?.modelContext?.save()
+                DesktopCleanerService.setDesktopIconsVisible(!newValue)
+            }
+        )
     }
     
     private func binding<T>(forKeyPath keyPath: ReferenceWritableKeyPath<AppSettings, T>) -> Binding<T> {

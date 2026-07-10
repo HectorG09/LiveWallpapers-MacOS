@@ -20,6 +20,9 @@ final class AppSettings {
     // Display
     var applyToAllDisplays: Bool = true
     
+    // Desktop
+    var cleanDesktopEnabled: Bool = false
+    
     // Online source
     var unsplashEnabled: Bool = false
     var unsplashAccessKey: String = ""
