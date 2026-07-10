@@ -18,9 +18,21 @@ struct WallpaperDetailView: View {
             Divider()
             
             VStack(alignment: .leading, spacing: 20) {
-                Text(wallpaper.title)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                HStack {
+                    Text(wallpaper.title)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Close")
+                }
                 
                 infoSection
                 
