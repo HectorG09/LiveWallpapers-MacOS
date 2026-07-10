@@ -15,17 +15,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     
     var modelContainer: ModelContainer?
     
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        // Menu-bar-only app
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        // Menu-bar-only app: no Dock icon, no Cmd-Tab entry.
         NSApp.setActivationPolicy(.accessory)
-        NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        print("LiveWallpapers: applicationDidFinishLaunching")
         
         setupStatusItem()
         setupModelContainer()
         setupEnergyManagement()
         
-        // Open gallery on launch
-        openGalleryWindow()
+        // Do not auto-open the gallery when launched from Spotlight to avoid phantom windows.
+        // The user can open it from the menu-bar icon.
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -81,22 +84,41 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        guard let button = statusItem?.button else { return }
-        button.image = NSImage(systemSymbolName: "photo.fill.on.rectangle.fill", accessibilityDescription: "Live Wallpapers")
+        guard let statusItem, let button = statusItem.button else {
+            print("LiveWallpapers: failed to create status item")
+            return
+        }
+        
+        if let image = NSImage(systemSymbolName: "photo.fill.on.rectangle.fill", accessibilityDescription: "Live Wallpapers") {
+            image.isTemplate = true
+            button.image = image
+        }
         button.action = #selector(statusItemClicked)
         button.target = self
+        button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "Open Gallery", action: #selector(openGalleryWindow), keyEquivalent: "g"))
         menu.addItem(NSMenuItem(title: "Settings...", action: #selector(openSettingsWindow), keyEquivalent: ","))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
-        statusItem?.menu = menu
+        statusItem.menu = menu
+        
+        print("LiveWallpapers: status item created")
     }
     
-    @objc private func statusItemClicked() {
-        // Left-click opens gallery; right-click shows menu via NSStatusItem.menu
-        openGalleryWindow()
+    @objc private func statusItemClicked(_ sender: Any?) {
+        guard let event = NSApp.currentEvent else {
+            openGalleryWindow()
+            return
+        }
+        
+        if event.type == .rightMouseUp {
+            // Right-click shows the menu automatically via NSStatusItem.menu
+            statusItem?.button?.performClick(nil)
+        } else {
+            openGalleryWindow()
+        }
     }
     
     @objc private func openGalleryWindow() {

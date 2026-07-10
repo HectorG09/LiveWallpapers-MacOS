@@ -25,11 +25,15 @@ struct LiveWallpapersApp: App {
     }()
     
     var body: some Scene {
-        WindowGroup {
+        // Hidden window scene for menu-bar-only app. Does not create a visible window on launch.
+        Window("Hidden", id: "hidden") {
             EmptyView()
                 .frame(width: 0, height: 0)
                 .hidden()
         }
+        .defaultSize(width: 0, height: 0)
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
         .modelContainer(sharedModelContainer)
     }
 }
