@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
+VERSION="1.0.3"
+
 cd "$(dirname "$0")"
 
-echo "Building release..."
+echo "Building release $VERSION..."
 swift build -c release
 
 echo "Creating app bundle..."
@@ -17,7 +19,7 @@ if [ -f Resources/AppIcon.icns ]; then
     cp Resources/AppIcon.icns LiveWallpapers.app/Contents/Resources/AppIcon.icns
 fi
 
-cat > LiveWallpapers.app/Contents/Info.plist << 'EOF'
+cat > LiveWallpapers.app/Contents/Info.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -37,7 +39,7 @@ cat > LiveWallpapers.app/Contents/Info.plist << 'EOF'
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>$VERSION</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>LSMinimumSystemVersion</key>
