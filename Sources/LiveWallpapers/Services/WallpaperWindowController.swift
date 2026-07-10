@@ -35,6 +35,9 @@ final class WallpaperWindowController: NSWindowController {
         
         let desktopIconLevel = Int(CGWindowLevelForKey(.desktopIconWindow))
         window.level = NSWindow.Level(rawValue: desktopIconLevel - 1)
+        
+        // Show the window behind everything else at the desktop level.
+        window.order(.below, relativeTo: 0)
     }
     
     func setVideo(url: URL, fillMode: VideoFillMode = .aspectFill) {

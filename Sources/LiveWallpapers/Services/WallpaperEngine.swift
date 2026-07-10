@@ -64,6 +64,7 @@ final class WallpaperEngine: ObservableObject {
     
     func ensureControllersExist() {
         if displayControllers.isEmpty {
+            print("LiveWallpapers: creating display controllers for \(NSScreen.screens.count) screen(s)")
             reconcileDisplayControllers()
         }
     }
@@ -71,13 +72,15 @@ final class WallpaperEngine: ObservableObject {
     // MARK: - Apply Wallpaper
     
     func apply(_ wallpaper: WallpaperItem, to specificDisplay: CGDirectDisplayID? = nil) {
+        print("LiveWallpapers: applying wallpaper '\(wallpaper.title)' (type: \(wallpaper.fileType))")
         ensureControllersExist()
         currentWallpaper = wallpaper
         
         guard let url = wallpaper.resolvedURL else {
-            print("No local URL for wallpaper \(wallpaper.title)")
+            print("LiveWallpapers: no local URL for wallpaper \(wallpaper.title)")
             return
         }
+        print("LiveWallpapers: resolved URL \(url.path)")
         
         let targetIDs: [CGDirectDisplayID]
         if let specificDisplay {
@@ -88,6 +91,7 @@ final class WallpaperEngine: ObservableObject {
         
         switch wallpaper.fileType {
         case .liveVideo:
+            print("LiveWallpapers: applying live video to \(targetIDs.count) display(s)")
             for id in targetIDs {
                 displayControllers[id]?.setVideo(url: url)
             }
